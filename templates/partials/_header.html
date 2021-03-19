@@ -16,22 +16,22 @@
             <div class="collapse navbar-collapse" id="main_nav99">
                 <ul class="navbar-nav mx-auto ">
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle" href="#" data-toggle="dropdown"> Home </a>
-                        <ul class="dropdown-menu dropdown-menu-left animate fade-up">
+                        <a class="nav-link active dropdown-toggle" href="{% url 'dashbord' %}" data-toggle="dropdown"> Home </a>
+                        {% comment %} <ul class="dropdown-menu dropdown-menu-left animate fade-up">
                             <li><a class="dropdown-item" href="/homepage-v1.html"> Home version one </a>
                             </li>
                             <li><a class="dropdown-item" href="#"> Home version two </a></li>
                             <li><a class="dropdown-item" href="#"> Home version three </a></li>
                             <li><a class="dropdown-item" href="#"> Home version four </a></li>
                             <li><a class="dropdown-item" href="#"> Home version five </a></li>
-                        </ul>
+                        </ul> {% endcomment %}
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"> Pages </a>
                         <ul class="dropdown-menu animate fade-up">
 
                             <li><a class="dropdown-item icon-arrow" href="#"> Property Listing </a>
-                                <ul class="submenu dropdown-menu  animate fade-up">
+                                {% comment %} <ul class="submenu dropdown-menu  animate fade-up">
                                     <li><a class="dropdown-item" href="/listing-style-v1.html"> Style 1</a></li>
                                     <li><a class="dropdown-item" href="/listing-style-v2.html"> Style 2</a></li>
                                     <li><a class="dropdown-item" href="/listing-style-v3.html"> Style 3</a></li>
@@ -46,7 +46,7 @@
                                     </li>
                                     <li><a class="dropdown-item" href="">Submenu item 4</a></li>
                                     <li><a class="dropdown-item" href="">Submenu item 5</a></li>
-                                </ul>
+                                </ul> {% endcomment %}
                             </li>
                             <li><a class="dropdown-item icon-arrow" href="#"> Property single detail </a>
                                 <ul class="submenu dropdown-menu  animate fade-up">
@@ -72,7 +72,7 @@
                                     <li><a class="dropdown-item" href="/agency-detail.html">Agency detail</a></li>
                                 </ul>
                             </li>
-                            <li><a class="dropdown-item" href="/about-us.html">About us </a>
+                            <li><a class="dropdown-item" href="{% url 'about' %}">About us </a>
                             <li><a class="dropdown-item" href="/login.html">Login </a>
                             <li><a class="dropdown-item" href="/register.html"> Register </a>
                             <li><a class="dropdown-item" href="/contact.html"> Contact </a>

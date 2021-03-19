@@ -10,7 +10,10 @@
                     <div class="card mx-auto" style="max-width: 380px;">
                         <div class="card-body">
                             <h4 class="card-title mb-4">Sign in</h4>
-                            <form action="#">
+                            <form action="Account/admin/login" method='POST' >
+                            
+                                {% csrf_token %}
+                            
                                 <a href="#" class="btn btn-facebook btn-block mb-2 text-white"> <i
                                         class="fa fa-facebook"></i> &nbsp; Sign
                                     in
@@ -18,12 +21,12 @@
                                     Facebook</a>
                                 <a href="#" class="btn btn-primary btn-block mb-4"> <i class="fa fa-google"></i> &nbsp;
                                     Sign in with
-                                    Google</a>
+                                    Google</a
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Username" type="text">
+                                    <input class="form-control" name="email" placeholder="Username" type="text">
                                 </div> <!-- form-group// -->
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Password" type="password">
+                                    <input class="form-control" name="password" placeholder="Password" type="password">
                                 </div> <!-- form-group// -->
 
                                 <div class="form-group">
@@ -34,13 +37,13 @@
                                     </label>
                                 </div> <!-- form-group form-check .// -->
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-block"> Login </button>
+                                    <button type="submit"  onclick="myFunction()" class="btn btn-primary btn-block"> Login </button>
                                 </div> <!-- form-group// -->
                             </form>
                         </div> <!-- card-body.// -->
                     </div> <!-- card .// -->
 
-                    <p class="text-center mt-4">Don't have account? <a href="#">Sign up</a></p>
+                    <p class="text-center mt-4">Don't have account? <a href="{% url 'register' %}">Sign up</a></p>
                 </div>
             </div>
         </div>
@@ -68,5 +71,9 @@
     </section>
     <!-- END CALL TO ACTION -->
 
-
+<script>
+  function myFunction() {
+    alert("Login");
+  }
+</script>
 {% endblock %}

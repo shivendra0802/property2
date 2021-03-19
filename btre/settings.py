@@ -9,11 +9,20 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+from pathlib import Path
 import os
+import environ
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+environ.Env.read_env()
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,10 +40,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'pages.apps.PagesConfig',
-    'listings.apps.ListingsConfig',
-    'realtors.apps.RealtorsConfig',
-    'accounts.apps.AccountsConfig',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +49,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'accounts',
+    'listings',
+    'pages',
+    'realtors'
 ]
 
 MIDDLEWARE = [
@@ -56,6 +69,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'btre.urls'
+
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8080',
+)
+
 
 TEMPLATES = [
     {
@@ -75,20 +94,47 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'btre.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'owaishs',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': env('DJANGO_DB_ENGINE'),
+       'NAME': env('DJANGO_DB_NAME'),
+       'USER': env('DJANGO_DB_USER'),
+       'PASSWORD': env('DJANGO_DB_PASSWORD'),
+       'HOST': env('DJANGO_DB_HOST'),
+       'PORT': env('DJANGO_DB_PORT')
     }
 }
+
+# Password validation
+# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
+REST_FRAMEWORK = {
+        
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+AUTH_USER_MODEL = 'accounts.Users'
+
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 
 
 # Password validation

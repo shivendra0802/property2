@@ -1,14 +1,16 @@
 from django.urls import path,include
-
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 from rest_framework import routers
 #
 router = routers.DefaultRouter()
-router.register('owaish', views.ListingView)
+router.register('view', views.ListingView)
 
 urlpatterns = [
-    path('a/', include(router.urls)),
-    path('sidd', views.ListingView, name='listings'),
-    path('<int:listing_id>', views.listing, name='listing'),
-    path('search', views.search, name='search')
+    path('r/', include(router.urls)),
+    # path('listing', views.ListingView, name='listings'),
+    # path('<int:listing_id>', views.listing, name='listing'),
+    # path('search', views.search, name='search'),
+    path('displaydata',views.displaydata, name="view"),
 ]

@@ -4,8 +4,8 @@ from . import views
 from rest_framework import routers
 #
 router = routers.DefaultRouter()
-router.register('sidd', views.RealtorsView)
+router.register('view', views.RealtorsView)
 
 urlpatterns = [
-    path('b/', include(router.urls)),
+    path('r/', include(router.urls)),
 ]
