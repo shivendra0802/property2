@@ -5,39 +5,15 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth.models import PermissionsMixin
+from urllib import request
+from accounts.managers import UserManager
 
-class UserManager(BaseUserManager):
-    use_in_migrations = True
-
-    def _create_user(self, email, password, **extra_fields):
-
-        if not email and request.data['type']  == 'front_user':
-            raise ValueError('The given email must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_user(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        return self._create_user(email, password, **extra_fields)
     
 class Users(AbstractBaseUser, PermissionsMixin):
   
     TYPE = (
-        ('front_user', 'front_user'),
+        ('seller', 'seller'),
+        ('customer', 'customer'),
         ('admin', 'admin')
     )
     
@@ -54,7 +30,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff status'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
     type = models.CharField(max_length=10, choices=TYPE, default=TYPE[0][0],null=False)
-    phone = models.CharField(max_length=15, default=None)
+    phone = models.CharField(max_length=15, default=None, null=True)
     gender  = models.CharField(max_length=6, choices=GENDER, null=True)
     date_of_birth  = models.DateField(null=True)
     is_deleted=models.BooleanField(default=False)
@@ -66,7 +42,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['phone']
 
     class Meta:
         verbose_name = _('user')

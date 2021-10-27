@@ -1,11 +1,11 @@
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.views import TokenObtainPairView
+# from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib import auth
-from . models import Users
+# from . models import Users
 from . serializers import UserTokenObtainPairSerializer, UsersSerializer
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
@@ -13,8 +13,24 @@ from email.message import EmailMessage
 from django.template import Context
 from django.template.loader import render_to_string
 import smtplib
-from .serializers import *
+# # from .serializers import *
+# from accounts.serializers import UsersSerializer
 from django.shortcuts import render, redirect
+from accounts import serializers
+from accounts.models import Users
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+
+
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from rest_framework import serializers
+
+
+
+from accounts import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
@@ -22,12 +38,14 @@ def signup(request):
   
   try:
     
-    if 'first_name' not in request.data and request.data['type']  == 'front_user':
+    if 'first_name' not in request.data and request.data['type']  == 'customer':
       return Response({'status':'error', 'message': 'first_name required.'}, status=404)
+
+    if 'first_name' not in request.data and request.data['type']  == 'seller':
+      return Response({'status':'error', 'message': 'first_name required.'}, status=404)
+
     if 'type' not in request.data:
       return Response({'status':'error', 'message': 'user type required.'}, status=404)
-
-
     
     password = request.data.get('password')
 
@@ -48,31 +66,44 @@ def signup(request):
         user = Users(**data)
         user.set_password(password)
         user.save()
-        # if 'first_name' in request.data and request.data['type']  == 'front_user':
-        #   first_name = request.data['first_name']  
+        if 'first_name' in request.data and request.data['type']  == 'customer':
 
-        #   emailSubject = "Welcome to Digital Press "
-          
-          
-        #   context = ({"name": first_name}) #Note I used a normal tuple instead of  Context({"username": "Gilbert"}) because Context is deprecated. When I used Context, I got an error > TypeError: context must be a dict rather than Context
+          first_name = request.data['first_name']  
+          print('----------', first_name)
 
-          
-        #   html_content = render_to_string('welcome_email.html', context)
+          emailSubject = "Welcome to Digital Press "
+          print('+++++====', emailSubject)
+            
+          context = ({"name": first_name}) #Note I used a normal tuple instead of  Context({"username": "Gilbert"}) because Context is deprecated. When I used Context, I got an error > TypeError: context must be a dict rather than Context
+          print('[[[[[[]]]]]', context)
+            
+            # html_content = render_to_string('welcome_email.html', context)
+          html_content = render_to_string("welcome email testing", context)
+          print('&&&&&&',html_content)
 
-        #   try:
-        #       #I used EmailMultiAlternatives because I wanted to send both text and html
-        #       emailMessage = EmailMultiAlternatives(emailSubject, html_content, "Digital Press", [user])
-        #       emailMessage.content_subtype = 'html'
-        #       emailMessage.send(fail_silently=False)
-              
-
-        #   except smtplib.SMTPException as e:
-        #       print('There was an error sending an email: ', e) 
-        #       error = {'message': ",".join(e.args) if len(e.args) > 0 else 'Unknown Error'}
-        #       raise serializers.ValidationError(error) 
+          try:
+                #I used EmailMultiAlternatives because I wanted to send both text and html
+              emailMessage = EmailMultiAlternatives(emailSubject, html_content, "Digital Press", [user])
+              print('#####', EmailMessage)
+              emailMessage.content_subtype = 'html'
+              print(emailMessage)
+              emailMessage.send(fail_silently=False)
+              # send_mail(
+              #         'Subject',
+              #         '',
+              #         'from@example.com',
+              #         ['john@example.com', 'jane@example.com'],
+              #     )
+                
+          except smtplib.SMTPException as e:
+              print('There was an error sending an email: ', e) 
+              print(e)
+              error = {'message': ",".join(e.args) if len(e.args) > 0 else 'Unknown Error'}
+              print(error)
+              raise serializers.ValidationError(error) 
  
-    return redirect('login')
-    # return Response({'status':'success', 'message': 'Successfully signed up please login.'}, status=201)
+    # return redirect('login')
+    return Response({'status':'success', 'message': 'Successfully signed up please login.'}, status=201)
   
   except ValidationError as e: 
     return Response({'status':'error', 'message': e.detail}, status=404)
@@ -105,18 +136,23 @@ class FrontUserLoginTokenObtainPairView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         
-        if not (Users.objects.filter(email=request.data.get('email'), type='front_user').count()==1):
+        if not (Users.objects.filter(email=request.data.get('email'), type='customer').count()==1):
             return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
         
         serializer = self.get_serializer(data=request.data)
-        
-        try:
-            serializer.is_valid(raise_exception=True)
+        print("///////////////",serializer)
 
-        except Exception as e:
-            
-            return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
-            
+        serializer.is_valid(raise_exception=True)
+        print(serializer)
+
+        # try:
+        #     serializer.is_valid(raise_exception=True)
+        #     print("ssssssssssssssssssss",serializer.is_valid)
+        #
+        # except Exception as e:
+        #
+        #     return Response({'status': 'error', 'message': 'No activesss account found with the given credentials'}, status=403)
+        #
         return Response(serializer.validated_data, status=200)
 
 class AdminLoginTokenObtainPairView(TokenObtainPairView):
@@ -130,39 +166,34 @@ class AdminLoginTokenObtainPairView(TokenObtainPairView):
         
         serializer = self.get_serializer(data=request.data)
         
-        #result=Users.objects.get(email=request.data['email'])
-        
-        
+        #result=Users.objects.get(email=request.data['email'])        
         try:
             serializer.is_valid(raise_exception=True)
             # uids=serializer.validated_data['id']
             # print("views", uid)
-            
-            
-            
+                    
         except Exception as e:
             return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
-        
-        
+                
         return redirect('dashbord')
-        # return Response(serializer.validated_data, status=200)
-# class SupplierLoginTokenObtainPairView(TokenObtainPairView):
-#     serializer_class = UserTokenObtainPairSerializer
+        return Response(serializer.validated_data, status=200)
 
-#     def post(self, request, *args, **kwargs):
+class SupplierLoginTokenObtainPairView(TokenObtainPairView):
+    serializer_class = UserTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
         
-#         if not (Users.objects.filter(email=request.data.get('email'), type='supplier').count()==1):
-#             return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
+        if not (Users.objects.filter(email=request.data.get('email'), type='seller').count()==1):
+            return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
         
-#         serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         
-#         try:
-#             serializer.is_valid(raise_exception=True)
-#         except Exception as e:
-#             return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({'status': 'error', 'message': 'No active account found with the given credentials'}, status=403)
             
-
-#         return Response(serializer.validated_data, status=200)
+        return Response(serializer.validated_data, status=200)
 
 
 @api_view(['POST'])
@@ -173,3 +204,24 @@ def logout(request):
     return Response({'status':'success','message': 'Logout Success'}, status=200)
   else:
     return Response({'status':'error','message': 'Method Not Allowed'}, status=405)
+
+
+
+
+from celery.schedules import crontab
+from django.http.response import HttpResponse
+from django.shortcuts import render
+# from .tasks import test_func
+from accounts.tasks import send_mail_func
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
+import json
+
+def send_mail_to_all(request):
+    send_mail_func.delay()
+    return HttpResponse("Sent")
+
+# @receiver(emailsignal)
+def schedule_mail(request,**kwargs):
+    schedule, created = CrontabSchedule.objects.get_or_create(hour = 12, minute = 20)
+    task = PeriodicTask.objects.create(crontab=schedule, name="schedule_mail_task_"+"3", task='dashboard.tasks.send_mail_func')#, args = json.dumps([[2,3]]))
+    return HttpResponse("Done")

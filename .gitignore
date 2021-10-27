@@ -90,7 +90,7 @@ ENV1/
 .venv
 venv/
 ENV/
-
+.msy_env
 # Spyder project settings
 .spyderproject
 .spyproject

@@ -9,8 +9,8 @@ router.register('view', views.ListingView)
 
 urlpatterns = [
     path('r/', include(router.urls)),
-    # path('listing', views.ListingView, name='listings'),
-    # path('<int:listing_id>', views.listing, name='listing'),
-    # path('search', views.search, name='search'),
+    path('listing', views.ListingView, name='listings'),
+    path('<int:listing_id>', views.listing, name='listing'),
+    path('search', views.search, name='search'),
     path('displaydata',views.displaydata, name="view"),
 ]

@@ -6,24 +6,25 @@ import requests
 
 def index(request):
 
-    callapi=requests.get('http://127.0.0.1:8000/listings/r/view/')
-    result=callapi.json()
-    data=result['results']
-
-    return render(request,'pages/index.html',{'data':data})
+    # callapi=requests.get('http://127.0.0.1:8000/listings/r/view/')
+    # result=callapi.json()
+    # # data=result['results']
+    #
+    # # return render(request,'pages/index.html',{'data':data})
+    return render(request, 'pages/index.html')
 
 def about(request):
 
-    #get realtor 
-    realtors = Realtor.objects.order_by('-hire_date')
-
-    #get MVP 
-    mvp_realtors = Realtor.objects.all().filter(is_mvp=True)
-
-    context = {
-        'realtors': realtors,
-        'mvp_realtors': mvp_realtors
-    }
+    # #get realtor
+    # realtors = Realtor.objects.order_by('-hire_date')
+    #
+    # #get MVP
+    # mvp_realtors = Realtor.objects.all().filter(is_mvp=True)
+    #
+    # context = {
+    #     'realtors': realtors,
+    #     'mvp_realtors': mvp_realtors
+    # }
     return render(request, 'pages/about.html', context)
 
 def login(request):
