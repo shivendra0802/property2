@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from rest_framework.decorators import permission_classes, throttle_classes
 from rest_framework.serializers import Serializer
 from .models import Listing
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -11,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from rest_framework import status
 from django.http import JsonResponse
+from btre.settings import BASE_DIR
+from django.core.files.storage import FileSystemStorage
 
 def index(request):
     listings = Listing.objects.order_by('-list_date').filter(is_published=True)
@@ -202,3 +205,40 @@ class ManageListingView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         return Response({'status': status.HTTP_201_CREATED})         
+
+
+from .models import ListingPhoto, Multiple#, Danger
+
+
+def thisupload(request):
+    if request.method == 'POST':
+        images = request.FILES.getlist('images')
+        for img in images:
+            Multiple.objects.create(images=img)
+            fs = FileSystemStorage()
+            print(fs)
+    return render(request, 'new.html')   
+
+from .serializers import ListingSerializer
+from accounts.serializers import UsersSerializer
+from rest_framework import viewsets
+from accounts.models import Users
+from rest_framework.throttling import UserRateThrottle
+
+class Nviewset(viewsets.ModelViewSet):
+    Serializer_class = ListingSerializer
+    throttle_classes = "listings.app"
+    permission_classes = 'AllowAny'
+
+    def get_queryset(self):
+        listing = Listing.objects.all()
+        return listing
+
+class UserViewset(viewsets.ModelViewSet):
+    serializer_class = UsersSerializer
+    throttle_classes = "listings.app"
+    permission_classes = "IsAuthenticated"
+
+    def get_queryset(self):
+        user = Users.objects.all()
+        return user

@@ -29,3 +29,32 @@ class Listing(models.Model):
     def __str__(self):
         return self.title
 
+
+
+class ListingPhoto(models.Model):
+    photo_1 = models.TextField()
+    file = models.FileField(upload_to='documents/', null=True)
+    image = models.ImageField(upload_to='images/', null=True)
+
+    # def __str__(self):
+    #     return self.photo_1
+
+
+
+class Multiple(models.Model):
+    images = models.FileField()
+
+    # def __str__(self):
+    #     return self.images
+
+class Danger(models.Model):
+    name = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+
+# class Movies(models.Model):
+#    file = models.FileField(upload_to='documents/', null=True)
+#    image = models.ImageField(upload_to='images/', null=True)
